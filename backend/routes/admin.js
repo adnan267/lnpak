@@ -7,6 +7,10 @@ const router = express.Router();
 // GET /api/admin/stats
 router.get('/stats', requireAdmin, async (req, res) => {
   const [[{ totalServices }]] = await pool.query('SELECT COUNT(*) AS totalServices FROM services');
+  const [[{ totalUniversities }]] = await pool.query('SELECT COUNT(*) AS totalUniversities FROM universities');
+  const [[{ totalScholarships }]] = await pool.query('SELECT COUNT(*) AS totalScholarships FROM scholarships');
+  const [[{ totalTourPackages }]] = await pool.query('SELECT COUNT(*) AS totalTourPackages FROM tour_packages');
+  const [[{ totalSubscribers }]] = await pool.query("SELECT COUNT(*) AS totalSubscribers FROM newsletter_subscribers WHERE status = 'subscribed'");
   const [[{ totalInquiries }]] = await pool.query('SELECT COUNT(*) AS totalInquiries FROM inquiries');
   const [[{ newInquiries }]] = await pool.query("SELECT COUNT(*) AS newInquiries FROM inquiries WHERE status = 'new'");
   const [[{ totalUsers }]] = await pool.query("SELECT COUNT(*) AS totalUsers FROM users WHERE role = 'user'");
@@ -20,6 +24,10 @@ router.get('/stats', requireAdmin, async (req, res) => {
 
   res.json({
     totalServices,
+    totalUniversities,
+    totalScholarships,
+    totalTourPackages,
+    totalSubscribers,
     totalInquiries,
     newInquiries,
     totalUsers,

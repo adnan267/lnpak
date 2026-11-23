@@ -15,11 +15,29 @@ export default function AdminSidebar() {
         <NavLink className={linkClass} to="/admin/services">
           <i className="bi bi-mortarboard"></i> Services
         </NavLink>
+        <NavLink className={linkClass} to="/admin/universities">
+          <i className="bi bi-building"></i> Universities
+        </NavLink>
+        <NavLink className={linkClass} to="/admin/scholarships">
+          <i className="bi bi-award"></i> Scholarships
+        </NavLink>
+        <NavLink className={linkClass} to="/admin/tour-packages">
+          <i className="bi bi-map"></i> Tour Packages
+        </NavLink>
+        <NavLink className={linkClass} to="/admin/faqs">
+          <i className="bi bi-question-circle"></i> FAQs
+        </NavLink>
+        <NavLink className={linkClass} to="/admin/newsletter">
+          <i className="bi bi-megaphone"></i> Newsletter
+        </NavLink>
         <NavLink className={linkClass} to="/admin/inquiries">
           <i className="bi bi-envelope"></i> Inquiries
         </NavLink>
         <NavLink className={linkClass} to="/admin/users">
           <i className="bi bi-people"></i> Users
+        </NavLink>
+        <NavLink className={linkClass} to="/admin/settings">
+          <i className="bi bi-gear"></i> Currency Settings
         </NavLink>
         <hr className="border-secondary" />
         <a href="/" target="_blank" rel="noreferrer">

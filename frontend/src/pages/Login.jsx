@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Login() {
   const { login } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -24,7 +26,7 @@ export default function Login() {
       const redirectTo = location.state?.from || (user.role === 'admin' ? '/admin' : '/dashboard');
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      setErrors(err.response?.data?.errors || ['Invalid email or password.']);
+      setErrors(err.response?.data?.errors || [t('auth.invalid')]);
     } finally {
       setSubmitting(false);
     }
@@ -33,7 +35,7 @@ export default function Login() {
   return (
     <div className="container">
       <div className="card auth-card p-4">
-        <h3 className="fw-bold text-center mb-3">Login</h3>
+        <h3 className="fw-bold text-center mb-3">{t('auth.loginTitle')}</h3>
 
         {errors.length > 0 && (
           <div className="alert alert-danger">
@@ -43,19 +45,19 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input type="email" name="email" className="form-control" value={form.email} onChange={handleChange} required />
+            <label className="form-label">{t('auth.email')}</label>
+            <input type="email" name="email" dir="ltr" className="form-control" value={form.email} onChange={handleChange} required />
           </div>
           <div className="mb-3">
-            <label className="form-label">Password</label>
-            <input type="password" name="password" className="form-control" value={form.password} onChange={handleChange} required />
+            <label className="form-label">{t('auth.password')}</label>
+            <input type="password" name="password" dir="ltr" className="form-control" value={form.password} onChange={handleChange} required />
           </div>
           <button type="submit" className="btn btn-primary w-100" disabled={submitting}>
-            {submitting ? 'Logging in...' : 'Login'}
+            {submitting ? t('auth.loggingIn') : t('auth.loginBtn')}
           </button>
         </form>
         <p className="text-center mt-3 mb-0 small">
-          Don't have an account? <Link to="/register">Sign up</Link>
+          {t('auth.noAccount')} <Link to="/register">{t('auth.signupLink')}</Link>
         </p>
       </div>
     </div>

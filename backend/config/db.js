@@ -6,6 +6,7 @@ const pool = mysql.createPool({
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'lnpak_db',
+  charset: 'utf8mb4', // needed for Russian and Chinese text
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,

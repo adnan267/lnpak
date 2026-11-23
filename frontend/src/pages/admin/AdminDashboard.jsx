@@ -23,6 +23,12 @@ export default function AdminDashboard() {
         </div>
         <div className="col-md-3">
           <div className="card stat-card p-3">
+            <div className="text-muted small">Total Universities</div>
+            <div className="fs-3 fw-bold">{stats.totalUniversities}</div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card stat-card p-3">
             <div className="text-muted small">Total Inquiries</div>
             <div className="fs-3 fw-bold">{stats.totalInquiries}</div>
           </div>
@@ -31,6 +37,24 @@ export default function AdminDashboard() {
           <div className="card stat-card p-3">
             <div className="text-muted small">New Inquiries</div>
             <div className="fs-3 fw-bold text-primary">{stats.newInquiries}</div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card stat-card p-3">
+            <div className="text-muted small">Scholarships</div>
+            <div className="fs-3 fw-bold">{stats.totalScholarships ?? 0}</div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card stat-card p-3">
+            <div className="text-muted small">Tour Packages</div>
+            <div className="fs-3 fw-bold">{stats.totalTourPackages ?? 0}</div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card stat-card p-3">
+            <div className="text-muted small">Newsletter Subscribers</div>
+            <div className="fs-3 fw-bold">{stats.totalSubscribers ?? 0}</div>
           </div>
         </div>
         <div className="col-md-3">
