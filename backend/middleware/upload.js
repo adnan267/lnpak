@@ -1,5 +1,6 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
 
 const ALLOWED = {
@@ -9,16 +10,6 @@ const ALLOWED = {
   '.webp': 'image/webp',
 };
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '..', 'uploads', 'services'));
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `svc_${Date.now()}_${crypto.randomBytes(4).toString('hex')}${ext}`);
-  },
-});
-
 function fileFilter(req, file, cb) {
   const ext = path.extname(file.originalname).toLowerCase();
   if (!ALLOWED[ext]) {
@@ -27,10 +18,28 @@ function fileFilter(req, file, cb) {
   cb(null, true);
 }
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 3 * 1024 * 1024 }, // 3MB
-});
+/** Builds a multer instance that saves images into uploads/<subdir>/ (folder is created if missing). */
+function createUpload(subdir, prefix) {
+  const dir = path.join(__dirname, '..', 'uploads', subdir);
+  fs.mkdirSync(dir, { recursive: true });
+
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, dir),
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname).toLowerCase();
+      cb(null, `${prefix}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}${ext}`);
+    },
+  });
+
+  return multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 3 * 1024 * 1024 }, // 3MB
+  });
+}
+
+// Default export stays the services uploader so existing routes keep working.
+const upload = createUpload('services', 'svc');
+upload.createUpload = createUpload;
 
 module.exports = upload;

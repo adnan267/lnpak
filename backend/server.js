@@ -10,8 +10,18 @@ const serviceRoutes = require('./routes/services');
 const inquiryRoutes = require('./routes/inquiries');
 const userRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin');
+const universityRoutes = require('./routes/universities');
+const currencyRoutes = require('./routes/currency');
+const scholarshipRoutes = require('./routes/scholarships');
+const tourPackageRoutes = require('./routes/tourPackages');
+const faqRoutes = require('./routes/faqs');
+const newsletterRoutes = require('./routes/newsletter');
+const settingsRoutes = require('./routes/settings');
 
 const app = express();
+
+// Behind a hosting proxy (Render, Railway, Vercel...) set TRUST_PROXY=1 so the real visitor IP is used for rate limiting.
+if (process.env.TRUST_PROXY) app.set('trust proxy', Number(process.env.TRUST_PROXY) || process.env.TRUST_PROXY);
 
 const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
   .split(',')
@@ -34,6 +44,13 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
+app.use('/api/universities', universityRoutes);
+app.use('/api/currency', currencyRoutes);
+app.use('/api/scholarships', scholarshipRoutes);
+app.use('/api/tour-packages', tourPackageRoutes);
+app.use('/api/faqs', faqRoutes);
+app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/settings', settingsRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);

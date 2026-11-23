@@ -3,10 +3,14 @@ const pool = require('../config/db');
 const { requireAdmin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 const slugify = require('../utils/slugify');
+const { cleanTranslations, withTranslations } = require('../utils/translations');
+const { normaliseCurrency, parseMoney } = require('../utils/currencies');
 const fs = require('fs');
 const path = require('path');
 
 const router = express.Router();
+
+const TRANSLATABLE_FIELDS = ['title', 'short_description', 'description'];
 
 // GET /api/services  (public — active services only, unless ?all=1 and requester is admin)
 router.get('/', async (req, res) => {
@@ -15,14 +19,14 @@ router.get('/', async (req, res) => {
     ? 'SELECT * FROM services ORDER BY created_at DESC'
     : 'SELECT * FROM services WHERE is_active = 1 ORDER BY created_at DESC';
   const [rows] = await pool.query(sql);
-  res.json({ services: rows });
+  res.json({ services: rows.map(withTranslations) });
 });
 
 // GET /api/services/admin/:id  (admin — fetch by id, regardless of active status, for the edit form)
 router.get('/admin/:id', requireAdmin, async (req, res) => {
   const [rows] = await pool.query('SELECT * FROM services WHERE id = ?', [req.params.id]);
   if (!rows[0]) return res.status(404).json({ message: 'Service not found.' });
-  res.json({ service: rows[0] });
+  res.json({ service: withTranslations(rows[0]) });
 });
 
 // GET /api/services/:slug  (public)
@@ -32,7 +36,7 @@ router.get('/:slug', async (req, res) => {
     [req.params.slug]
   );
   if (!rows[0]) return res.status(404).json({ message: 'Service not found.' });
-  res.json({ service: rows[0] });
+  res.json({ service: withTranslations(rows[0]) });
 });
 
 // POST /api/services  (admin — create, optional image upload)
@@ -44,6 +48,13 @@ router.post('/', requireAdmin, upload.single('image'), async (req, res) => {
     if (!title || !title.trim()) {
       return res.status(400).json({ errors: ['Title is required.'] });
     }
+
+    const serviceFee = parseMoney(req.body.service_fee);
+    if (serviceFee === undefined) {
+      return res.status(400).json({ errors: ['Service fee must be a valid positive number.'] });
+    }
+    const feeCurrency = normaliseCurrency(req.body.fee_currency);
+    const translations = cleanTranslations(req.body.translations, TRANSLATABLE_FIELDS);
 
     const baseSlug = slugify(title);
     let slug = baseSlug;
@@ -58,8 +69,13 @@ router.post('/', requireAdmin, upload.single('image'), async (req, res) => {
     const imagePath = req.file ? `uploads/services/${req.file.filename}` : null;
 
     const [result] = await pool.query(
-      'INSERT INTO services (title, slug, country, short_description, description, image, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [title.trim(), slug, country || null, short_description || null, description || null, imagePath, is_active]
+      `INSERT INTO services
+         (title, slug, country, short_description, description, image, service_fee, fee_currency, translations, is_active)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        title.trim(), slug, country || null, short_description || null, description || null,
+        imagePath, serviceFee, feeCurrency, translations, is_active,
+      ]
     );
 
     res.status(201).json({ message: 'Service created.', id: result.insertId, slug });
@@ -83,6 +99,13 @@ router.put('/:id', requireAdmin, upload.single('image'), async (req, res) => {
     if (!title || !title.trim()) {
       return res.status(400).json({ errors: ['Title is required.'] });
     }
+
+    const serviceFee = parseMoney(req.body.service_fee);
+    if (serviceFee === undefined) {
+      return res.status(400).json({ errors: ['Service fee must be a valid positive number.'] });
+    }
+    const feeCurrency = normaliseCurrency(req.body.fee_currency);
+    const translations = cleanTranslations(req.body.translations, TRANSLATABLE_FIELDS);
 
     let slug = existing.slug;
     if (title.trim().toLowerCase() !== existing.title.toLowerCase()) {
@@ -108,8 +131,12 @@ router.put('/:id', requireAdmin, upload.single('image'), async (req, res) => {
     }
 
     await pool.query(
-      'UPDATE services SET title=?, slug=?, country=?, short_description=?, description=?, image=?, is_active=? WHERE id=?',
-      [title.trim(), slug, country || null, short_description || null, description || null, imagePath, is_active, id]
+      `UPDATE services SET title=?, slug=?, country=?, short_description=?, description=?, image=?,
+         service_fee=?, fee_currency=?, translations=?, is_active=? WHERE id=?`,
+      [
+        title.trim(), slug, country || null, short_description || null, description || null,
+        imagePath, serviceFee, feeCurrency, translations, is_active, id,
+      ]
     );
 
     res.json({ message: 'Service updated.' });

@@ -81,3 +81,54 @@ body {
   color: #fff;
 }
 .stat-card { border-radius: 14px; border: none; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06); }
+
+/* ---- Language / currency pickers in the navbar ---- */
+.locale-switchers .form-select {
+  width: auto;
+  min-width: 78px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.locale-switchers .form-select option { color: #1c1c1c; }
+
+/* ---- Chinese typography (applied when <html lang="zh">) ---- */
+html[lang='zh'] body {
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+}
+
+/* ---- Language / filter helpers ---- */
+.filter-dropdown .dropdown-menu { min-width: 240px; max-height: 320px; overflow-y: auto; }
+.filter-dropdown .dropdown-toggle { text-align: start; width: 100%; }
+.badge-scholarship { background-color: #198754; color: #fff; }
+.tab-pills .nav-link { cursor: pointer; }
+.faq-answer p:last-child { margin-bottom: 0; }
+
+/* ---- Free consultation popup ---- */
+.consult-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+}
+.consult-dialog {
+  background: #fff;
+  border-radius: 14px;
+  max-width: 520px;
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* ---- University filters ---- */
+.uni-filters {
+  border-radius: 14px;
+  border: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
